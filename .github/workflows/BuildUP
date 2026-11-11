@@ -1,0 +1,39 @@
+name: Build Minecraft 26.1 Mod
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Java 25 einrichten
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+
+      - name: Gradle Berechtigungen setzen
+        run: chmod +x gradlew
+
+      - name: Mod mit Gradle kompilieren
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          arguments: build
+
+      - name: Kompilierte JAR-Datei hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-build-26.1
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+            !build/libs/*-dev.jar
