@@ -1,0 +1,36 @@
+name: Build Fabric 26.1 Mod
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Java 25 einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - name: Gradle Cache & Setup
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Mod bauen
+        run: ./gradlew build --stacktrace
+
+      - name: Fertige JAR hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: fabric-mod-26.1
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
